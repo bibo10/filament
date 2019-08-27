@@ -15,6 +15,7 @@ set(PUBLIC_HDR_DIR include)
 set(HDRS
         include/filamat/Enums.h
         include/filamat/MaterialBuilder.h
+        include/filamat/MaterialEditor.h
         include/filamat/Package.h
         include/filamat/PostprocessMaterialBuilder.h)
 
@@ -42,6 +43,7 @@ set(COMMON_SRCS
         src/shaders/ShaderGenerator.cpp
         src/Enums.cpp
         src/MaterialBuilder.cpp
+        src/MaterialEditor.cpp
         src/MaterialVariants.cpp
         src/PostprocessMaterialBuilder.cpp
         src/Includes.cpp)

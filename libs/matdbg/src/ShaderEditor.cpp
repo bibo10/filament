@@ -21,6 +21,9 @@
 #include <filaflat/BlobDictionary.h>
 #include <filaflat/DictionaryReader.h>
 
+#include <filamat/MaterialEditor.h>
+#include <filamat/Package.h>
+
 #include <backend/DriverEnums.h>
 
 #include <utils/Log.h>
@@ -96,12 +99,12 @@ bool ShaderEditor::applyShaderEdit(backend::ShaderModel shaderModel, uint8_t var
         }
     }
 
+    filamat::Package original(mOriginalPackage.getData(), mOriginalPackage.getSize());
+    filamat::MaterialEditor editor(original);
+    editor.applyShaderEdit(shaderModel, variant, stage, source);
+    const filamat::Package& edited = editor.getEditedPackage();
+
 #if 0
-
-    filamat::MaterialEditor editor(mOriginalPackage);
-    editor.applyShaderEdit(shaderModel, variant, stage, source)
-    editor.getEditedDictionary(?, ?);
-
     // Write the new dictionary chunk.
     switch (mBackend) {
         case Backend::METAL:
