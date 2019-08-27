@@ -16,6 +16,8 @@
 
 #include <matdbg/ShaderEditor.h>
 
+#include <filamat/Enums.h>
+
 #include <filaflat/BlobDictionary.h>
 #include <filaflat/DictionaryReader.h>
 
@@ -85,14 +87,20 @@ bool ShaderEditor::applyShaderEdit(backend::ShaderModel shaderModel, uint8_t var
             sstream.read((char*) &size, sizeof(size));
             content.resize(size);
             sstream.read((char*) content.data(), size);
-            if (ChunkType(type) == mDictionaryTag || ChunkType(type) == mMaterialTag) {
-                continue;
-            }
+            // if (ChunkType(type) == mDictionaryTag || ChunkType(type) == mMaterialTag) {
+            //     continue;
+            // }
             tstream.write((char*) &type, sizeof(type));
             tstream.write((char*) &size, sizeof(size));
             tstream.write((char*) content.data(), size);
         }
     }
+
+#if 0
+
+    filamat::MaterialEditor editor(mOriginalPackage);
+    editor.applyShaderEdit(shaderModel, variant, stage, source)
+    editor.getEditedDictionary(?, ?);
 
     // Write the new dictionary chunk.
     switch (mBackend) {
@@ -123,6 +131,7 @@ bool ShaderEditor::applyShaderEdit(backend::ShaderModel shaderModel, uint8_t var
 
         // TODO EYEBALL
     }
+#endif
 
     const size_t size = tstream.str().size();
     uint8_t* data = new uint8_t[size];

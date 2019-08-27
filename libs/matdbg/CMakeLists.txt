@@ -68,6 +68,7 @@ target_link_libraries(${TARGET} PUBLIC
         utils
         filaflat
         filabridge
+        filamat
         backend
         civetweb
         utils
