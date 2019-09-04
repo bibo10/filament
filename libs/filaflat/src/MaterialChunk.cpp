@@ -96,7 +96,7 @@ bool MaterialChunk::getTextShader(Unflattener unflattener, BlobDictionary const&
         return false;
     }
 
-    size_t offset = pos->second;
+    size_t offset = pos->second; // 1481
     if (offset == 0) {
         // This shader was not found.
         return false;
@@ -105,16 +105,18 @@ bool MaterialChunk::getTextShader(Unflattener unflattener, BlobDictionary const&
 
     // Read how big the shader is.
     uint32_t shaderSize = 0;
-    if (!unflattener.read(&shaderSize)){
+    if (!unflattener.read(&shaderSize)){ // unreasonable
         return false;
     }
+
+    assert(shaderSize < 2000000);
 
     // Add an extra char for the null terminator.
     shaderBuilder.announce(shaderSize + 1);
 
     // Read how many lines there are.
     uint32_t lineCount = 0;
-    if (!unflattener.read(&lineCount)){
+    if (!unflattener.read(&lineCount)){ // unreasonable
         return false;
     }
 
@@ -125,6 +127,7 @@ bool MaterialChunk::getTextShader(Unflattener unflattener, BlobDictionary const&
             return false;
         }
         const char* string = dictionary.getString(lineIndex);
+        assert(string && "Bad line index");
         shaderBuilder.append(string, strlen(string));
         shaderBuilder.append("\n", 1);
     }

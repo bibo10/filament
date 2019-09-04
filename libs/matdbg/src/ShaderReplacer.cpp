@@ -209,7 +209,7 @@ void ShaderIndex::writeLinesChunk(ChunkType tag, ostream& stream) const {
     uint32_t count = mStringLines.size();
     stream.write((char*) &count, sizeof(count));
     for (const auto& stringLine : mStringLines) {
-        stream.write(stringLine.data(), stringLine.length() + 1);
+        stream.write(stringLine.c_str(), stringLine.length() + 1);
     }
 }
 
@@ -261,6 +261,7 @@ void ShaderIndex::replaceShader(backend::ShaderModel shaderModel, uint8_t varian
     encodeShadersToIndices();
 }
 
+// NOTE: this ignores "record.offset" and assumes consecutive layout.
 void ShaderIndex::decodeShadersFromIndices() {
     for (auto& record : mShaderRecords) {
         record.decodedShaderText.clear();
@@ -279,9 +280,24 @@ void ShaderIndex::encodeShadersToIndices() {
     for (size_t i = 0; i < mStringLines.size(); i++) {
         table[mStringLines[i]] = uint16_t(i);
     }
+
+    uint32_t offset = sizeof(uint64_t);
+    for (const auto& record : mShaderRecords) {
+        offset += sizeof(ShaderRecord::model);
+        offset += sizeof(ShaderRecord::variant);
+        offset += sizeof(ShaderRecord::stage);
+        offset += sizeof(ShaderRecord::offset);
+    }
+
     for (auto& record : mShaderRecords) {
         record.stringLength = record.decodedShaderText.length() + 1;
         record.lineIndices.clear();
+        printf("prideout offset %4d => %4d\n", record.offset, offset);
+        record.offset = offset;
+
+        offset += sizeof(ShaderRecord::stringLength);
+        offset += sizeof(uint32_t);
+
         const char* s = record.decodedShaderText.c_str();
         size_t length = record.decodedShaderText.length();
         for (size_t cur = 0; s[cur] != '\0'; cur++) {
@@ -309,6 +325,7 @@ void ShaderIndex::encodeShadersToIndices() {
                 continue;
             }
             record.lineIndices.push_back(iter->second);
+            offset += sizeof(uint16_t);
          }
     }
 }
